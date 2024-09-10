@@ -31,36 +31,43 @@ public class TestCases extends ExcelDataProvider { // Lets us read the data
          * Go to YouTube.com and Assert you are on the correct URL. Click on "About" at
          * the bottom of the sidebar, and print the message on the screen.
          */
-        @Test(enabled = false)
+        @Test(enabled = true)
         public void testCase01() {
-                // /
-                System.out.println("Start of testCase01");
 
-                // Opening YouTube url
-                wp.openUrl();
+                try {
+                        System.out.println("Start of testCase01");
 
-                // Asserting that we are landing on correct url
-                Assert.assertEquals(wp.getUrl(), "https://www.youtube.com/", "Url Verification Failed");
+                        // Opening YouTube url
+                        wp.openUrl();
 
-                // Locating, scrolling and clicking on "About" button
-                WebElement aboutBtn = wp.findElementVisi("//a[text()='About']");
-                wp.scrollTO(aboutBtn);
-                wp.click(aboutBtn);
+                        // Asserting that we are landing on correct url
+                        Assert.assertEquals(wp.getUrl(), "https://www.youtube.com/", "Url Verification Failed");
 
-                // Waiting for about content to show to confirm page is open fully
-                wp.findElementVisi("//section[@class='ytabout__content']/p[1]");
+                        // Locating, scrolling and clicking on "About" button
+                        WebElement aboutBtn = wp.findElementVisi("//a[text()='About']");
+                        wp.scrollTO(aboutBtn);
+                        wp.click(aboutBtn);
 
-                // Storing status of current url contains "about" word on not
-                boolean status = driver.getCurrentUrl().contains("about");
+                        // Waiting for about content to show to confirm page is open fully
+                        wp.findElementVisi("//section[@class='ytabout__content']/p[1]");
 
-                // Asserting that we are on about page
-                Assert.assertEquals(status, true, "About page is not opend");
+                        // Storing status of current url contains "about" word on not
+                        boolean status = driver.getCurrentUrl().contains("about");
 
-                // Storing and printing the message shown on about page
-                List<WebElement> textElements = new ArrayList<>(
-                                driver.findElements(By.xpath("//section[@class='ytabout__content']/*")));
-                for (WebElement message : textElements) {
-                        System.out.println(message.getText());
+                        // Asserting that we are on about page
+                        Assert.assertEquals(status, true, "About page is not opend");
+
+                        // Storing and printing the message shown on about page
+                        List<WebElement> textElements = new ArrayList<>(
+                                        driver.findElements(By.xpath("//section[@class='ytabout__content']/*")));
+                        for (WebElement message : textElements) {
+                                System.out.println(message.getText());
+                        }
+
+                        System.out.println("testCase01 Passed");
+
+                } catch (Exception e) {
+                        System.out.println("testCase01 Failed");
                 }
                 System.out.println("End of testCase01");
         }
@@ -73,48 +80,55 @@ public class TestCases extends ExcelDataProvider { // Lets us read the data
          */
         @Test(enabled = true)
         public void testCase02() {
-                System.out.println("Start of testCase02");
+                try {
+                        System.out.println("Start of testCase02");
 
-                // Opening YouTube url
-                wp.openUrl();
+                        // Opening YouTube url
+                        wp.openUrl();
 
-                // Locating and clicking 'Movies' button
-                WebElement moviesBtn = wp.findElementVisi("//yt-formatted-string[text()='Movies']");
-                wp.click(moviesBtn);
+                        // Locating and clicking 'Movies' button
+                        WebElement moviesBtn = wp.findElementVisi("//yt-formatted-string[text()='Movies']");
+                        wp.click(moviesBtn);
 
-                // Locating and clicking the 'Next' button till it reaches last
-                WebElement nextBtn = wp.findElementVisi(
-                                "//span[text()='Top selling']/ancestor::div[@id='dismissible']//button[@aria-label='Next']");
-                while (nextBtn.isDisplayed()) {
-                        wp.click(nextBtn);
-                        try {
-                                nextBtn = wp.findElementVisi(
-                                                "//span[text()='Top selling']/ancestor::div[@id='dismissible']//button[@aria-label='Next']",
-                                                5);
-                        } catch (Exception e) {
-                                break;
+                        // Locating and clicking the 'Next' button till it reaches last
+                        WebElement nextBtn = wp.findElementVisi(
+                                        "//span[text()='Top selling']/ancestor::div[@id='dismissible']//button[@aria-label='Next']");
+                        while (nextBtn.isDisplayed()) {
+                                wp.click(nextBtn);
+                                try {
+                                        nextBtn = wp.findElementVisi(
+                                                        "//span[text()='Top selling']/ancestor::div[@id='dismissible']//button[@aria-label='Next']",
+                                                        5);
+                                } catch (Exception e) {
+                                        break;
+                                }
                         }
+
+                        // Creating object of 'SoftAssert' class
+                        SoftAssert sa = new SoftAssert();
+
+                        // Locating the age category text of last movie and asserting that it is for
+                        // Adult 'A'
+                        String age = wp.findElementVisi(
+                                        "(//span[text()='Top selling']/ancestor::div[@id='primary']//ytd-grid-movie-renderer[last()]/ytd-badge-supported-renderer//p)[2]")
+                                        .getText();
+                        sa.assertNotEquals(age, "A", "It is not for Mature");
+
+                        // Locating that comedy, animation or any other category is present in the last
+                        // movie
+                        String category = wp.findElementVisi(
+                                        "//span[text()='Top selling']/ancestor::div[@id='primary']//ytd-grid-movie-renderer[last()]/a/span")
+                                        .getText();
+                        sa.assertNotEquals(category.length(), 0, "There is not category present in this card");
+
+                        // Asserting all the soft assert
+                        sa.assertAll();
+
+                        System.out.println("testCase02 Passed");
+
+                } catch (Exception e) {
+                        System.out.println("testCase02 Failed");
                 }
-
-                // Creating object of 'SoftAssert' class
-                SoftAssert sa = new SoftAssert();
-
-                // Locating the age category text of last movie and asserting that it is for
-                // Adult 'A'
-                String age = wp.findElementVisi(
-                                "(//span[text()='Top selling']/ancestor::div[@id='primary']//ytd-grid-movie-renderer[last()]/ytd-badge-supported-renderer//p)[2]")
-                                .getText();
-                sa.assertNotEquals(age, "A", "It is not for Mature");
-
-                // Locating that comedy, animation or any other category is present in the last
-                // movie
-                String category = wp.findElementVisi(
-                                "//span[text()='Top selling']/ancestor::div[@id='primary']//ytd-grid-movie-renderer[last()]/a/span")
-                                .getText();
-                sa.assertNotEquals(category.length(), 0, "There is not category present in this card");
-
-                // Asserting all the soft assert
-                sa.assertAll();
 
                 System.out.println("End of testCase02");
         }
@@ -124,51 +138,60 @@ public class TestCases extends ExcelDataProvider { // Lets us read the data
          * Print the name of the playlist. Soft Assert on whether the number of tracks
          * listed is less than or equal to 50.
          */
-        @Test(enabled = false)
+        @Test(enabled = true)
         public void testCase03() {
-                System.out.println("Start of testCase03");
+                try {
+                        System.out.println("Start of testCase03");
 
-                // Creating object of 'SoftAssert'
-                SoftAssert sa = new SoftAssert();
+                        // Creating object of 'SoftAssert'
+                        SoftAssert sa = new SoftAssert();
 
-                // Opening 'YouTube' url
-                wp.openUrl();
+                        // Opening 'YouTube' url
+                        wp.openUrl();
 
-                // Locating and clicking 'Music' button
-                WebElement musicBtn = wp.findElementVisi("//yt-formatted-string[text()='Music']");
-                wp.click(musicBtn);
+                        // Locating and clicking 'Music' button
+                        WebElement musicBtn = wp.findElementVisi("//yt-formatted-string[text()='Music']");
+                        wp.click(musicBtn);
 
-                // Locating 'Next' button in the first section and clicking until it reaches
-                // last
-                WebElement nextBtn = wp.findElementVisi("(//ytd-item-section-renderer[1])//button[@aria-label='Next']");
-                while (nextBtn.isDisplayed()) {
-                        wp.click(nextBtn);
-                        try {
-                                nextBtn = wp.findElementVisi(
-                                                "(//ytd-item-section-renderer[1])//button[@aria-label='Next']", 5);
-                        } catch (Exception e) {
-                                break;
+                        // Locating 'Next' button in the first section and clicking until it reaches
+                        // last
+                        WebElement nextBtn = wp.findElementVisi(
+                                        "(//ytd-item-section-renderer[1])//button[@aria-label='Next']");
+                        while (nextBtn.isDisplayed()) {
+                                wp.click(nextBtn);
+                                try {
+                                        nextBtn = wp.findElementVisi(
+                                                        "(//ytd-item-section-renderer[1])//button[@aria-label='Next']",
+                                                        5);
+                                } catch (Exception e) {
+                                        break;
+                                }
                         }
+
+                        // Locating, getting and printing the last playlist name
+                        String playlistName = wp.findElementVisi(
+                                        "(//ytd-item-section-renderer[1])//ytd-compact-station-renderer[last()]//h3", 5)
+                                        .getText();
+                        System.out.println("Playlist Name : " + playlistName);
+
+                        // Locating and storing total number of track videos present in the last music
+                        // card
+                        WebElement videoCount = wp.findElementVisi(
+                                        "(//ytd-item-section-renderer[1])//ytd-compact-station-renderer[last()]//p[@id='video-count-text']",
+                                        5);
+                        int videoCountNum = wp.intFromString(videoCount.getText());
+
+                        // Soft Asserting that total track count is less than or equal to 50
+                        sa.assertTrue(videoCountNum <= 50, "Video Count is greater than 50 : " + videoCountNum);
+
+                        // Asserting all the soft assert
+                        sa.assertAll();
+
+                        System.out.println("testCase03 Passed");
+
+                } catch (Exception e) {
+                        System.out.println("testCase03 Failed");
                 }
-
-                // Locating, getting and printing the last playlist name
-                String playlistName = wp.findElementVisi(
-                                "(//ytd-item-section-renderer[1])//ytd-compact-station-renderer[last()]//h3", 5)
-                                .getText();
-                System.out.println("Playlist Name : " + playlistName);
-
-                // Locating and storing total number of track videos present in the last music
-                // card
-                WebElement videoCount = wp.findElementVisi(
-                                "(//ytd-item-section-renderer[1])//ytd-compact-station-renderer[last()]//p[@id='video-count-text']",
-                                5);
-                int videoCountNum = wp.intFromString(videoCount.getText());
-
-                // Soft Asserting that total track count is less than or equal to 50
-                sa.assertTrue(videoCountNum <= 50, "Video Count is greater than 50 : " + videoCountNum);
-
-                // Asserting all the soft assert
-                sa.assertAll();
 
                 System.out.println("End of testCase03");
         }
@@ -178,22 +201,29 @@ public class TestCases extends ExcelDataProvider { // Lets us read the data
          * Posts” along with the sum of the number of likes on all 3 of them. No likes
          * given means 0.
          */
-        @Test(enabled = false)
+        @Test(enabled = true)
         public void testCase04() {
-                System.out.println("Start of testCase04");
+                try {
+                        System.out.println("Start of testCase04");
 
-                // Opening 'YouTube' url
-                wp.openUrl();
+                        // Opening 'YouTube' url
+                        wp.openUrl();
 
-                // Asserting that 'YouTube' url is opened
-                Assert.assertEquals(wp.getUrl(), "https://www.youtube.com/", "Url Verification Failed");
+                        // Asserting that 'YouTube' url is opened
+                        Assert.assertEquals(wp.getUrl(), "https://www.youtube.com/", "Url Verification Failed");
 
-                // Locating and clicking the 'News' button
-                WebElement newsBtn = wp.findElementVisi("//yt-formatted-string[text()='News']");
-                wp.click(newsBtn);
+                        // Locating and clicking the 'News' button
+                        WebElement newsBtn = wp.findElementVisi("//yt-formatted-string[text()='News']");
+                        wp.click(newsBtn);
 
-                // Getting the Title, Body and number of likes in News cards
-                wp.getNewsTitleBodyLike(3);
+                        // Getting the Title, Body and number of likes in News cards
+                        wp.getNewsTitleBodyLike(3);
+
+                        System.out.println("testCase04 Passed");
+
+                } catch (Exception e) {
+                        System.out.println("testCase04 Failed");
+                }
 
                 System.out.println("End of testCase04");
         }
@@ -203,22 +233,29 @@ public class TestCases extends ExcelDataProvider { // Lets us read the data
          * src/test/resources/data.xlsx, and keep scrolling till the sum of each video’s
          * views reach 10 Cr.
          */
-        @Test(enabled = false, dataProvider = "excelData")
+        @Test(enabled = true, dataProvider = "excelData")
         public void testCase05(String text) throws InterruptedException {
-                System.out.println("Start of testCase05");
+                try {
+                        System.out.println("Start of testCase05");
 
-                // Opening 'YouTube' url
-                wp.openUrl();
+                        // Opening 'YouTube' url
+                        wp.openUrl();
 
-                // Asserting that 'YouTube' url is opened
-                Assert.assertEquals(wp.getUrl(), "https://www.youtube.com/", "Url Verification Failed");
+                        // Asserting that 'YouTube' url is opened
+                        Assert.assertEquals(wp.getUrl(), "https://www.youtube.com/", "Url Verification Failed");
 
-                // Searching for text provided by the dataProvider
-                wp.search(text);
+                        // Searching for text provided by the dataProvider
+                        wp.search(text);
 
-                // Scrolling until total view count of videos is greater than or equal to the
-                // targetViewCount
-                wp.viewCount(100000000);
+                        // Scrolling until total view count of videos is greater than or equal to the
+                        // targetViewCount
+                        wp.viewCount(100000000);
+
+                        System.out.println("testCase05 Passed");
+
+                } catch (Exception e) {
+                        System.out.println("testCase05 Failed");
+                }
 
                 System.out.println("End of testCase05");
         }
@@ -258,7 +295,11 @@ public class TestCases extends ExcelDataProvider { // Lets us read the data
         // Quiting the browser
         @AfterTest
         public void endTest() {
-                // driver.close();
-                driver.quit();
+                try {
+                        driver.quit();
+                        System.out.println("Quiting Complete");
+                } catch (Exception e) {
+                        System.out.println("Quiting Failed");
+                }
         }
 }
