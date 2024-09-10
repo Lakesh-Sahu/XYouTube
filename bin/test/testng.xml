@@ -3,7 +3,8 @@
 <suite name="Test Suite for Buildout">
     <test name = "Test Cases for Buildout">
        <classes>          
-            <class name="demo.TestCases"></class>
+            <class name="demo.TestCases">
+            </class>
         </classes>
     </test>
 </suite>
